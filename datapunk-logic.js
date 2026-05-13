@@ -17,6 +17,16 @@ return function(propsRef) {
 
         p.draw = () => {
             const props = propsRef.current || {}
+
+            // Verificação de segurança: Aguarda o React inicializar os nós via customInit
+            if (nos.length === 0) {
+                if (props.backgroundColor === 'transparent') {
+                    p.clear();
+                } else {
+                    p.background(props.backgroundColor || '#000000');
+                }
+                return;
+            }
             
             // Permite fundo transparente para mostrar o Grid do React por baixo
             if (props.backgroundColor === 'transparent') {
