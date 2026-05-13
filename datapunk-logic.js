@@ -89,15 +89,21 @@ return function(propsRef) {
                 if (alphaLinha > 0.05) {
                     p.strokeWeight(c.tipo === "especial" ? 2 * escalaGlobal : 1.5 * escalaGlobal)
 
+                    // Mapeia as cores para as props do Framer
+                    let corCentral = props.rootColor || '#FF0000'
+                    let corSub = props.subColor || '#0000FF'
+                    let corInter = props.interColor || '#FFA500'
+
                     if (c.tipo === "especial") {
-                        p.stroke(props.interColor || '#FFA500')
+                        p.stroke(corInter) // Laranja Sólido
                     } else {
                         if (noA.tipo === "central" || noB.tipo === "central") {
-                            p.stroke(props.rootColor || '#FF0000')
+                            p.stroke(corCentral) // Vermelho Sólido
                         } else {
-                            p.stroke(props.subColor || '#0000FF')
+                            p.stroke(corSub) // Azul Sólido
                         }
                     }
+                    
                     p.line(noA.projX, noA.projY, noB.projX, noB.projY)
                 }
             }
@@ -109,30 +115,42 @@ return function(propsRef) {
                     p.noStroke()
                     let tamanhoBase
 
-                    if (n.tipo === "central") { p.fill(props.rootColor || '#FF0000'); tamanhoBase = 24 } 
-                    else if (n.tipo === "principal") { p.fill(props.principalColor || '#7FFF00'); tamanhoBase = 16 } 
-                    else if (n.tipo === "sub") { p.fill(props.subColor || '#0000FF'); tamanhoBase = 10 } 
-                    else if (n.tipo === "interconexao") { p.fill(props.interColor || '#FFA500'); tamanhoBase = 12 }
+                    // Mapeia as cores sólidas das propriedades do Framer (ou usa as originais como fallback)
+                    let corCentral = props.rootColor || '#FF0000'
+                    let corPrincipal = props.principalColor || '#7FFF00'
+                    let corSub = props.subColor || '#0000FF'
+                    let corInter = props.interColor || '#FFA500'
+
+                    if (n.tipo === "central") { p.fill(corCentral); tamanhoBase = 24 } 
+                    else if (n.tipo === "principal") { p.fill(corPrincipal); tamanhoBase = 16 } 
+                    else if (n.tipo === "sub") { p.fill(corSub); tamanhoBase = 10 } 
+                    else if (n.tipo === "interconexao") { p.fill(corInter); tamanhoBase = 12 }
 
                     let tamanhoFinal = tamanhoBase * n.tamanhoMult * escalaGlobal
 
+                    // 4º PASSO: Desenhar Caracteres "∎" Sólidos
                     p.textSize(tamanhoFinal * 1.5)
                     p.text("∎", n.projX, n.projY)
 
+                    // ==========================================
+                    // 5º PASSO: ETIQUETAS HUD RESPONSIVAS
+                    // ==========================================
                     n.div.show()
 
-                    let divX = n.projX + p.width / 2 + tamanhoFinal / 2 + 12
-                    let divY = n.projY + p.height / 2 - 10
+                    let divX = n.projX + (p.width / 2) + (tamanhoFinal / 2) + 12
+                    let divY = n.projY + (p.height / 2) - 10
                     n.div.position(divX, divY)
+                    n.div.style("transform", "translate(0, 0)") // Remove o translate de antes
 
                     let baseTexto = ""
                     let bgCor = ""
                     let textoCor = ""
 
-                    if (n.tipo === "central") { baseTexto = "ROOT"; bgCor = props.rootColor || '#FF0000'; textoCor = "#FFF" } 
-                    else if (n.tipo === "principal") { baseTexto = "SUB"; bgCor = props.principalColor || '#7FFF00'; textoCor = "#000" } 
-                    else if (n.tipo === "sub") { baseTexto = "INTER SUB"; bgCor = props.subColor || '#0000FF'; textoCor = "#FFF" } 
-                    else if (n.tipo === "interconexao") { baseTexto = "INTERCONEXÃO"; bgCor = props.interColor || '#FFA500'; textoCor = "#000" }
+                    // CORES SÓLIDAS DAS ETIQUETAS
+                    if (n.tipo === "central") { baseTexto = "ROOT"; bgCor = corCentral; textoCor = '#FFF' } 
+                    else if (n.tipo === "principal") { baseTexto = "SUB"; bgCor = corPrincipal; textoCor = '#000' } 
+                    else if (n.tipo === "sub") { baseTexto = "INTER SUB"; bgCor = corSub; textoCor = '#FFF' } 
+                    else if (n.tipo === "interconexao") { baseTexto = "INTERCONEXÃO"; bgCor = corInter; textoCor = '#000' }
 
                     let conteudoHTML = `<span style="color: ${textoCor};">${baseTexto}</span>`
 
@@ -148,6 +166,7 @@ return function(propsRef) {
 
                     n.div.html(conteudoHTML)
                     n.div.style("background", bgCor)
+                    n.div.style("border", "none") // Tira a borda inventada antes
                 } else {
                     n.div.hide()
                 }
