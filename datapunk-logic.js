@@ -264,6 +264,40 @@ return function(propsRef) {
             escalaGlobal = p.min(w, h) / 1000
             escalaGlobal = p.constrain(escalaGlobal * sm, 0.4, 1.2)
         }
+        
+        // ===============================================
+        // MÉTODOS DE AÇÃO GLOBAL (EXPORTADOS PARA REACT)
+        // ===============================================
+        p.customExpandAll = () => {
+            for (let n of nos) {
+                if (n.tipo === "principal") {
+                    n.expandido = true
+                    n.alvoTamanhoMult = 3.0
+                    n.alvoAlpha = 1.0
+                }
+                if (n.pai !== null) {
+                    n.alvoAlpha = 1.0
+                }
+            }
+        }
+
+        p.customCollapseAll = () => {
+            for (let n of nos) {
+                if (n.tipo === "principal") {
+                    n.expandido = false
+                    n.alvoTamanhoMult = 1.0
+                }
+                if (n.pai !== null) {
+                    n.alvoAlpha = 0.0
+                }
+            }
+        }
+
+        p.customResetOrbit = () => {
+            tempoOrbitaRoot = 0
+            anguloX = 0
+            anguloY = 0
+        }
 
         function projetar3D(x, y, z, angX, angY) {
             let x1 = x * p.cos(angY) - z * p.sin(angY)
